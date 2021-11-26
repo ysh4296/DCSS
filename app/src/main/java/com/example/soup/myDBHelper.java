@@ -11,6 +11,7 @@ public class myDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db){
+        onUpgrade(db,0,1);
         db.execSQL("create table Charactor_table(/*Charactor_name char(40),*/" +
                 " level int," +
                 " experience_point double," +
@@ -31,7 +32,7 @@ public class myDBHelper extends SQLiteOpenHelper {
                 " Feet_Gear_item_index int)");
         // + 경험치 관련 추가 요소들 있음
         db.execSQL("create table Item_table(Item_Name char(40)," +
-                " Item_Index INTEGER PRIMARY KEY AUTOINCREMENT," +
+                " Item_Index int," +
                 " Item_Rarity int," +
                 " Health_Point int," +
                 " Mana_Point int," +
@@ -42,6 +43,7 @@ public class myDBHelper extends SQLiteOpenHelper {
                 " Ice_Resist_point int," +
                 " Storm_Resist_point int," +
                 " Negative_Resist_point int," +
+                " Gear int," +
                 " Item_Image_Path int)");
     }
     @Override

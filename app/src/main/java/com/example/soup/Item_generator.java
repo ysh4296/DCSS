@@ -1,62 +1,56 @@
 package com.example.soup;
-
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Item_generator extends AppCompatActivity {
-    private ArrayList<item_info> roll_gatcha(int times){
+    public ArrayList<item_info> roll_gatcha(ArrayList<item_data> list, int times){
         ArrayList<item_info> get_list = new ArrayList<item_info>();
         Random random = new Random();
         int num = random.nextInt(100);
 
         if(num < 3){
-            get_list.add(get_item(0));
+            get_list.add(get_item(list,0));
         } else if (num < 18){
-            get_list.add(get_item(1));
+            get_list.add(get_item(list,1));
         } else if (num < 48){
-            get_list.add(get_item(2));
+            get_list.add(get_item(list,2));
         } else {
-            get_list.add(get_item(3));
+            get_list.add(get_item(list,3));
         }
         return get_list;
     }
-    private item_info get_item(int item_rarity){
-        myDBHelper myHelper = new myDBHelper(this);
-        SQLiteDatabase sqlDB = myHelper.getReadableDatabase();
-        Cursor cursor;
-        cursor = sqlDB.rawQuery("select count(*) from Item_table where Item_Rarity = " + item_rarity + ";" , null);
-        int max_num_of_item = cursor.getInt(0);
-        Log.d("test", String.valueOf(max_num_of_item));
-        cursor = sqlDB.rawQuery("select * from Item_table where Item_Rarity = " + item_rarity + ";" , null);
-        ArrayList<Integer> list = new ArrayList<>();
-        while(cursor.moveToNext()){
-            int item_index = cursor.getInt(1);
-            list.add(item_index);
+
+    private item_info get_item(ArrayList<item_data> list, int item_rarity){
+        int max_num_of_item = new Integer(list.size());
+        int rar_cnt = 0;
+        ArrayList<Integer> randomset = new ArrayList<>();
+        for (int i = 0 ; i < max_num_of_item ; i++){
+            if(list.get(i).item_Rarity != item_rarity) continue;
+            else rar_cnt++;
+            randomset.add(i);
         }
         Random random = new Random();
-        int index = list.get(random.nextInt(max_num_of_item));
-        cursor = sqlDB.rawQuery("select * from Item_table where Item_Index = " + index + ";" , null);
-        String item_name = cursor.getString(0);
-        int item_index = cursor.getInt(1);
-        int item_Rarity = cursor.getInt(2);
-        int health_point = cursor.getInt(3);
-        int mana_point = cursor.getInt(4);
-        int strength_point = cursor.getInt(5);
-        int intelligence_point = cursor.getInt(6);
-        int agility_point = cursor.getInt(7);
-        int fire_resist_point = cursor.getInt(8);
-        int ice_resist_point = cursor.getInt(9);
-        int storm_resist_point = cursor.getInt(10);
-        int negative_resist_point = cursor.getInt(11);
-        int item_path = cursor.getInt(12);
+        int index = random.nextInt(rar_cnt);
+        item_data Picked_item = list.get(randomset.get(index));
+        String item_name = Picked_item.item_name;
+        int item_index = Picked_item.item_index;
+        int item_Rarity = Picked_item.item_Rarity;
+        int health_point = Picked_item.health_point;
+        int mana_point = Picked_item.mana_point;
+        int strength_point = Picked_item.strength_point;
+        int intelligence_point = Picked_item.intelligence_point;
+        int agility_point = Picked_item.agility_point;
+        int fire_resist_point = Picked_item.fire_resist_point;
+        int ice_resist_point = Picked_item.ice_resist_point;
+        int storm_resist_point = Picked_item.storm_resist_point;
+        int negative_resist_point = Picked_item.negative_resist_point;
+        int gear = Picked_item.gear;
+        int item_path = Picked_item.item_path;
         String item_info = "";
         if(health_point != 0){
             item_info += "HP : " + health_point + "\n";
@@ -85,6 +79,10 @@ public class Item_generator extends AppCompatActivity {
         if(negative_resist_point != 0){
             item_info += "Nr : " + negative_resist_point + "\n";
         }
+        if(gear != 0){
+            item_info += "gear : " + gear + "\n";
+        }
+        Log.d("test line",item_path + "   " + item_name + "    " + item_info);
         return new item_info(item_path,item_name,item_info);
     }
 }

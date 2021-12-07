@@ -45,11 +45,25 @@ public class myDBHelper extends SQLiteOpenHelper {
                 " Negative_Resist_point int," +
                 " Gear int," +
                 " Item_Image_Path int)");
+        db.execSQL("create table Bag_Item_table(Item_Name char(40)," +
+                " Item_Index int," +
+                " Item_Rarity int," +
+                " Health_Point int," +
+                " Mana_Point int," +
+                " Strength_Point int," +
+                " Intelligence_Point int," +
+                " Agility_point int," +
+                " Fire_Resist_point int, " +
+                " Ice_Resist_point int," +
+                " Storm_Resist_point int," +
+                " Negative_Resist_point int," +
+                " Gear int," +
+                " Item_Image_Path int)");
     }
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion, int newVersion){
         db.execSQL("drop table if exists Charactor_table");
         db.execSQL("drop table if exists Item_table");
-        onCreate(db);
+        db.execSQL("drop table if exists Bag_Item_table");
     }
 }

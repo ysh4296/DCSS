@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -24,12 +25,19 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private ActivityResultLauncher<Intent> resultLauncher;
 
+    public Player player;
+    public ArrayList<item_data> list;
+    public Monster monster;
+    public Current_State current;
+    public Skill skill;
     //String filepath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/myApp";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,18 +52,122 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onActivityResult(ActivityResult result){
                         if(result.getResultCode() == RESULT_OK){
-                            Log.d( "test","return");
+                            Bundle extras = result.getData().getExtras();
+                            String page = (String) result.getData().getStringExtra("Page_type");
+                            Log.d("return", page);
+                            if(page.equals("Gatcha")){
+                                player = (Player) result.getData().getParcelableExtra("player_data");
+                                list = (ArrayList<item_data>) result.getData().getSerializableExtra("item_list");
+                                set_page();
+                                add_data_for_bag();
+                                Log.d("item","Updated");
+                            }
                         }
                     }
                 }
         );
+        set_Monster();
     }
+    private void set_Monster() {
 
+
+    }
+    public void Attack(View view){
+        damage_each();
+        if(current.player_health_point < 0) {/**exit**/
+            moveTaskToBack(true);
+            finishAndRemoveTask();
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
+        else if(current.monster_health_point < 0) {/**exit**/
+            player.experience_point += monster.XP;
+            Add_Skill(monster.XP);
+            set_Monster();
+        }
+    }
+    private void Add_Skill(double XP) {
+        int count_all = 0;
+        count_all += skill.Fighting_weight;
+        count_all += skill.Armor_weight;
+        count_all += skill.sword_weight;
+        count_all += skill.axe_weight;
+        count_all += skill.arrow_weight;
+
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        skill.Fighting += XP / count_all;
+        skill.Armor += XP / count_all;
+        skill.sword += XP / count_all;
+        skill.axe += XP / count_all;
+        skill.arrow += XP / count_all;
+
+
+        sqlDB.close();
+        return;
+    }
+    public void damage_each(){
+        Random random = new Random();
+        for(int i = 0 ; i < 3 ; i++)
+        current.player_health_point -= random.nextInt(monster.Damage);
+        int res = 0;
+        for(int i = 0 ; i < 3 ; i++) {
+            res += random.nextInt(player.strength_point * (Exp_to_Level(skill.arrow + skill.sword + skill.axe)));
+        }
+        current.monster_health_point -= res * (100 - monster.AC/ 100);
+        set_page();
+    }
+    private int Exp_to_Level(double v) {
+        if(v < 100){
+            return 1;
+        } else if(v < 300){
+            return 2;
+        } else if(v < 500){
+            return 3;
+        } else if(v < 800){
+            return 4;
+        } else {
+            return 5;
+        }
+
+    }
+    public void set_page(){
+        /**set data for main page**/
+        return;
+    }
+    public void add_data_for_bag(){
+        /**set data for main page**/
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        for (int i = 0 ; i < (int)list.size() ; i++) {
+            sqlDB.execSQL("insert into Bag_Item_table values('" +
+                    ""+ list.get(i).item_name +"' , '" +
+                    ""+ list.get(i).item_index +"' , '" +
+                    ""+ list.get(i).item_Rarity +"' , '" +
+                    ""+ list.get(i).health_point +"' , '" +
+                    ""+ list.get(i).mana_point +"' , '" +
+                    ""+ list.get(i).strength_point +"' , '" +
+                    ""+ list.get(i).intelligence_point +"' , '" +
+                    ""+ list.get(i).agility_point +"' , '" +
+                    ""+ list.get(i).fire_resist_point +"' , '" +
+                    ""+ list.get(i).ice_resist_point +"' , '" +
+                    ""+ list.get(i).storm_resist_point +"' , '" +
+                    ""+ list.get(i).negative_resist_point +"' , '" +
+                    ""+ list.get(i).gear +"' , '" +
+                    ""+ list.get(i).item_path +"" +
+                    "');");
+        }
+        sqlDB.close();
+        return;
+    }
     public void initializeDB(View view){
         myDBHelper myHelper = new myDBHelper(this);
         SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
         sqlDB.execSQL("drop table if exists Charactor_table");
         sqlDB.execSQL("drop table if exists Item_table");
+        sqlDB.execSQL("drop table if exists Bag_Item_table");
+        sqlDB.execSQL("drop table if exists Current_State");
+        sqlDB.execSQL("drop table if exists Monster");
+        sqlDB.execSQL("drop table if exists Skill");
         sqlDB.execSQL("create table Charactor_table(/*Charactor_name char(40),*/" +
                 " level int," +
                 " experience_point double," +
@@ -89,13 +201,47 @@ public class MainActivity extends AppCompatActivity {
                 " Negative_Resist_point int," +
                 " Gear int," +
                 " Item_Image_Path int)");
+        sqlDB.execSQL("create table Bag_Item_table(Item_Name char(40)," +
+                " Item_Index int," +
+                " Item_Rarity int," +
+                " Health_Point int," +
+                " Mana_Point int," +
+                " Strength_Point int," +
+                " Intelligence_Point int," +
+                " Agility_point int," +
+                " Fire_Resist_point int, " +
+                " Ice_Resist_point int," +
+                " Storm_Resist_point int," +
+                " Negative_Resist_point int," +
+                " Gear int," +
+                " Item_Image_Path int)");
+
+        sqlDB.execSQL("create table Skill(Fighting double," +
+                " Armor double," +
+                " sword double," +
+                " axe double," +
+                " arrow double," +
+                " Fighting_weight int," +
+                " Armor_weight int," +
+                " sword_weight int," +
+                " axe_weight int," +
+                " arrow_weight int)");
+        sqlDB.execSQL("create table Monster(health_point int," +
+                " AC int," +
+                " EV int," +
+                " XP double," +
+                " Damage int," +
+                " Monster_image_id int)");
+        sqlDB.execSQL("create table Current_State(player_health_point int," +
+                " monster_health_point int," +
+                " turns int)");
         Log.d("test","insert into Item_table values('" +
                         "3' , '" +
                         "1' , '" +
                         "3' , '" +
                         "0' , '" +
                         "0' , '" +
-                        "0' , '" +
+                        "3' , '" +
                         "0' , '" +
                         "0' , '" +
                         "0' , '" +
@@ -111,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
                 "3' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "3' , '" +
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
@@ -127,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
                 "3' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "3' , '" +
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
@@ -142,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                 "4' , '" +
                 "3' , '" +
                 "0' , '" +
-                "0' , '" +
+                "4' , '" +
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
@@ -159,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
                 "2' , '" +
                 "5' , '" +
                 "3' , '" +
-                "0' , '" +
+                "4' , '" +
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
@@ -249,8 +395,25 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 R.raw.double_sword +"" +
                 "');");
-
-
+        sqlDB.execSQL("insert into Charactor_table values('" +
+                "1' , '" +
+                "0' , '" +
+                "100000' , '" +
+                "10' , '" +
+                "5' , '" +
+                "5' , '" +
+                "5' , '" +
+                "5' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "-1' , '" +
+                "-1' , '" +
+                "-1' , '" +
+                "-1' , '" +
+                "-1 " +
+                "');");
         sqlDB.close();
         //Toast.makeText(getApplicationContext(),"Initialized",Toast.LENGTH_LONG).show();
     }
@@ -292,34 +455,47 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(),"Searched",Toast.LENGTH_LONG).show();
         return list;
     }
-    public void btnClick(View view) {
-        /*File dir = new File(filepath);
-        if(!dir.exists()){
-            dir.mkdir();
-        }
-        */
-        File file = new File("testFile.txt");
-        if(!file.exists()){
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            FileWriter writer = new FileWriter(file, true);
-            writer.write("hello");
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     public void Gatcha_Page(View view){
         Intent intent = new Intent(this,Gatcha.class);
         ArrayList<item_data> list = searchDB(this);
         Log.d("print d" , list.toString());
         intent.putExtra("item_data",list);
+        Player player = searchDB_player(this);
+        intent.putExtra("player_data", (Parcelable) player);
+        Log.d("Player", String.valueOf(player.level));
         resultLauncher.launch(intent);
+    }
+
+    private Player searchDB_player(MainActivity view) {
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getReadableDatabase();
+        Cursor cursor;
+        cursor = sqlDB.rawQuery("select * from Charactor_table;" , null);
+        Player player = null;
+        while(cursor.moveToNext()) {
+            int level = cursor.getInt(0);
+            double experience_point = cursor.getDouble(1);
+            int gold = cursor.getInt(2);
+            int health_point = cursor.getInt(3);
+            int mana_point = cursor.getInt(4);
+            int strength_point = cursor.getInt(5);
+            int intelligence_point = cursor.getInt(6);
+            int agility_point = cursor.getInt(7);
+            int fire_resist_point = cursor.getInt(8);
+            int ice_resist_point = cursor.getInt(9);
+            int storm_resist_point = cursor.getInt(10);
+            int negative_resist_point = cursor.getInt(11);
+            int head_gear_item_index = cursor.getInt(12);
+            int body_gear_item_index = cursor.getInt(13);
+            int left_hand_item_gear_index = cursor.getInt(14);
+            int right_hand_item_gear_index = cursor.getInt(15);
+            int feet_item_gear_index = cursor.getInt(16);
+            player = new Player(level,experience_point,gold,
+                    health_point,mana_point,strength_point,intelligence_point,
+                    agility_point,fire_resist_point,ice_resist_point,storm_resist_point,
+                    negative_resist_point,head_gear_item_index,body_gear_item_index,left_hand_item_gear_index,
+                    right_hand_item_gear_index,feet_item_gear_index);
+        }
+        return player;
     }
 }

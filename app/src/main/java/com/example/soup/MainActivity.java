@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
                         if(result.getResultCode() == RESULT_OK){
                             Bundle extras = result.getData().getExtras();
                             String page = (String) result.getData().getStringExtra("Page_type");
-                            Log.d("return", page);
                             if(page.equals("Gatcha")){
                                 player = (Player) result.getData().getParcelableExtra("player_data");
                                 list = (ArrayList<item_data>) result.getData().getSerializableExtra("item_list");
@@ -67,14 +66,48 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
         set_Monster();
+        update_Current();
+        set_Current();
     }
     private void set_Monster() {
-
-
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        Cursor cursor;
+        cursor = sqlDB.rawQuery("select * from Monster;" , null);
+        while(cursor.moveToNext()) {
+            current.player_health_point = cursor.getInt(0);
+            current.monster_health_point = cursor.getInt(1);
+            current.turns = cursor.getInt(2);
+        }
+        sqlDB.close();
+    }
+    private void update_Current(){
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        sqlDB.rawQuery("update Current_State " +
+                "player_health_point = " + "'" + current.player_health_point +"'" +
+                "monster_health_point = " + "'" + current.monster_health_point +"'" +
+                "turns = " + "'" + current.turns +"'" +
+                ";" , null);
+        sqlDB.close();
+    }
+    private void set_Current() {
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        Cursor cursor;
+        cursor = sqlDB.rawQuery("select * from Current_State;" , null);
+        while(cursor.moveToNext()) {
+            current.player_health_point = cursor.getInt(0);
+            current.monster_health_point = cursor.getInt(1);
+            current.turns = cursor.getInt(2);
+        }
+        sqlDB.close();
     }
     public void Attack(View view){
         damage_each();
-        if(current.player_health_point < 0) {/**exit**/
+        if(current.player_health_point < 0) {
+            Toast.makeText(getApplicationContext(),"GameOver",Toast.LENGTH_LONG).show();
+            /**exit**/
             moveTaskToBack(true);
             finishAndRemoveTask();
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -83,28 +116,68 @@ public class MainActivity extends AppCompatActivity {
             player.experience_point += monster.XP;
             Add_Skill(monster.XP);
             set_Monster();
+            update_Current();
+            set_Current();
         }
     }
+
     private void Add_Skill(double XP) {
         int count_all = 0;
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        searchDB_Skill();
         count_all += skill.Fighting_weight;
         count_all += skill.Armor_weight;
         count_all += skill.sword_weight;
         count_all += skill.axe_weight;
         count_all += skill.arrow_weight;
-
-        myDBHelper myHelper = new myDBHelper(this);
-        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
         skill.Fighting += XP / count_all;
         skill.Armor += XP / count_all;
         skill.sword += XP / count_all;
         skill.axe += XP / count_all;
         skill.arrow += XP / count_all;
-
-
+        insertDB_Skill();
         sqlDB.close();
         return;
     }
+    private void insertDB_Skill(){
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        sqlDB.rawQuery("update Skill " +
+        "Fighting = " + "'" + skill.Fighting +"'" +
+        "Armor = " + "'" + skill.Armor +"'" +
+        "sword = " + "'" + skill.sword +"'" +
+        "axe = " + "'" + skill.axe +"'" +
+        "arrow = " + "'" + skill.arrow +"'" +
+        "Fighting_weight = " + "'" + skill.Fighting_weight +"'" +
+        "Armor_weight = " + "'" + skill.Armor_weight +"'" +
+        "sword_weight = " + "'" + skill.sword_weight +"'" +
+        "axe_weight = " + "'" + skill.axe_weight +"'" +
+        "arrow_weight = " + "'" + skill.arrow_weight +"'" +
+        ";" , null);
+        sqlDB.close();
+    }
+
+    private void searchDB_Skill() {
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        Cursor cursor;
+        cursor = sqlDB.rawQuery("select * from Skill;" , null);
+        while(cursor.moveToNext()) {
+            skill.Fighting = cursor.getDouble(0);
+            skill.Armor = cursor.getDouble(1);
+            skill.sword = cursor.getDouble(2);
+            skill.axe = cursor.getDouble(3);
+            skill.arrow = cursor.getDouble(4);
+            skill.Fighting_weight = cursor.getInt(6);
+            skill.Armor_weight = cursor.getInt(7);
+            skill.sword_weight = cursor.getInt(8);
+            skill.axe_weight = cursor.getInt(9);
+            skill.arrow_weight = cursor.getInt(10);
+        }
+        sqlDB.close();
+    }
+
     public void damage_each(){
         Random random = new Random();
         for(int i = 0 ; i < 3 ; i++)
@@ -128,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return 5;
         }
-
     }
     public void set_page(){
         /**set data for main page**/
@@ -413,6 +485,19 @@ public class MainActivity extends AppCompatActivity {
                 "-1' , '" +
                 "-1' , '" +
                 "-1 " +
+                "');");
+        sqlDB.execSQL("insert into Current_State values('" +
+                "0' , '" +
+                "0' , '" +
+                "0 " +
+                "');");
+        sqlDB.execSQL("insert into Monster values('" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0 " +
                 "');");
         sqlDB.close();
         //Toast.makeText(getApplicationContext(),"Initialized",Toast.LENGTH_LONG).show();

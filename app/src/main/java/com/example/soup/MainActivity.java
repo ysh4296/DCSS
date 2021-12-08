@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                                 set_Current();
                                 Log.d("Equipment","Updated");
                             }
+                            if(page.equals("Status")){}
                         }
                     }
                 }
@@ -183,15 +184,27 @@ public class MainActivity extends AppCompatActivity {
             finishAndRemoveTask();
             android.os.Process.killProcess(android.os.Process.myPid());
         }
-        else if(current.monster_health_point < 0) {/**exit**/
+        else if(current.monster_health_point <= 0) {/**exit**/
             player.experience_point += monster.XP;
             Add_Skill(monster.XP);
+            get_gold(monster.XP);
             SearchDB_Monster();
             set_Monster();
             update_Current();
             set_Current();
             set_page();
         }
+    }
+
+    private void get_gold(double XP) {
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        player.gold += XP * 10;
+        sqlDB.execSQL("update Charactor_table " +
+                "set gold = " + "" + player.gold +" " +
+                "where gold is not null;");
+        Toast.makeText(getApplicationContext(),"Gain Gold : " + String.valueOf((int)(monster.XP * 10)),Toast.LENGTH_LONG).show();
+        sqlDB.close();
     }
 
     private void Add_Skill(double XP) {
@@ -565,7 +578,7 @@ public class MainActivity extends AppCompatActivity {
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
                 "animal_skin1' , '" +
-                "5' , '" +
+                "12' , '" +
                 "2' , '" +
                 "0' , '" +
                 "0' , '" +
@@ -581,7 +594,7 @@ public class MainActivity extends AppCompatActivity {
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
                 "cloak4' , '" +
-                "3' , '" +
+                "13' , '" +
                 "3' , '" +
                 "0' , '" +
                 "0' , '" +
@@ -596,8 +609,8 @@ public class MainActivity extends AppCompatActivity {
                 R.raw.cloak4 +"" +
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
-                "orcish_dagger' , '" +
-                "4' , '" +
+                "green_dragon_scale_mail' , '" +
+                "14' , '" +
                 "3' , '" +
                 "0' , '" +
                 "0' , '" +
@@ -613,7 +626,7 @@ public class MainActivity extends AppCompatActivity {
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
                 "ring_mail2' , '" +
-                "5' , '" +
+                "15' , '" +
                 "2' , '" +
                 "5' , '" +
                 "3' , '" +
@@ -668,7 +681,7 @@ public class MainActivity extends AppCompatActivity {
                 "" + R.raw.soul_eater +"" +
                 "');");
         sqlDB.execSQL("insert into Monster values('" +
-                "500' , '" +
+                "100' , '" +
                 "5' , '" +
                 "0' , '" +
                 "30' , '" +
@@ -750,6 +763,12 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("player_data", (Parcelable) player);
         resultLauncher.launch(intent);
     }
+    public void Status_Page(View view){
+        Intent intent = new Intent(this,Status.class);
+        ArrayList<item_data> list = searchDB_bag(this);
+        intent.putExtra("player_data", (Parcelable) player);
+        resultLauncher.launch(intent);
+    }
 
     private ArrayList<item_data> searchDB_bag(MainActivity mainActivity) {
         myDBHelper myHelper = new myDBHelper(this);
@@ -779,7 +798,6 @@ public class MainActivity extends AppCompatActivity {
         }
         cursor.close();
         sqlDB.close();
-        Toast.makeText(getApplicationContext(),"Searched",Toast.LENGTH_LONG).show();
         return list;
     }
 

@@ -56,10 +56,15 @@ public class Equipment_page extends AppCompatActivity {
     }
     public void set_item(){
         item_erase();
+        if(item_RecyclerAdapter.head != null)
         player.head_gear_item_index = item_RecyclerAdapter.head.item_index;
+        if(item_RecyclerAdapter.body != null)
         player.body_gear_item_index = item_RecyclerAdapter.body.item_index;
+        if(item_RecyclerAdapter.right != null)
         player.right_hand_item_gear_index = item_RecyclerAdapter.right.item_index;
+        if(item_RecyclerAdapter.left != null)
         player.left_hand_item_gear_index = item_RecyclerAdapter.left.item_index;
+        if(item_RecyclerAdapter.foot != null)
         player.feet_item_gear_index = item_RecyclerAdapter.foot.item_index;
         item_add();
     }
@@ -280,9 +285,6 @@ public class Equipment_page extends AppCompatActivity {
         }
         if(negative_resist_point != 0){
             item_info += "Nr : " + negative_resist_point + "\n";
-        }
-        if(gear != 0){
-            item_info += "gear : " + gear + "\n";
         }
         Log.d("test line",item_path + "  item name   " + item_name + "   item info " + item_info);
         return new item_info(item_path,item_name,item_info);

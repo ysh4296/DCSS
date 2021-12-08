@@ -141,9 +141,6 @@ public class Gatcha extends AppCompatActivity {
         if(negative_resist_point != 0){
             item_info += "Nr : " + negative_resist_point + "\n";
         }
-        if(gear != 0){
-            item_info += "gear : " + gear + "\n";
-        }
         Log.d("test line",item_path + "  item name   " + item_name + "   item info " + item_info);
         return new item_info(item_path,item_name,item_info);
     }

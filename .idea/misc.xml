@@ -3,10 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/dirgs/AndroidStudioProjects/DCSS/app/src/main/res/layout/activity_equipment_page.xml" value="0.1" />
+        <entry key="..\:/Users/dirgs/AndroidStudioProjects/DCSS/app/src/main/res/layout/activity_equipment_page.xml" value="0.2" />
         <entry key="..\:/Users/dirgs/AndroidStudioProjects/DCSS/app/src/main/res/layout/activity_gatcha.xml" value="0.25" />
-        <entry key="..\:/Users/dirgs/AndroidStudioProjects/DCSS/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/dirgs/AndroidStudioProjects/DCSS/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/dirgs/AndroidStudioProjects/DCSS/app/src/main/res/layout/activity_skill_page.xml" value="0.33" />
+        <entry key="..\:/Users/dirgs/AndroidStudioProjects/DCSS/app/src/main/res/layout/activity_status.xml" value="0.22" />
+        <entry key="..\:/Users/dirgs/AndroidStudioProjects/DCSS/app/src/main/res/layout/bag_recyclerview_item.xml" value="0.17806484295845998" />
+        <entry key="..\:/Users/dirgs/AndroidStudioProjects/DCSS/app/src/main/res/layout/recyclerview_item.xml" value="0.22" />
         <entry key="..\:/Users/dirgs/AndroidStudioProjects/soup/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2833333333333333" />
         <entry key="..\:/Users/dirgs/AndroidStudioProjects/soup/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2833333333333333" />
         <entry key="..\:/Users/dirgs/AndroidStudioProjects/soup/app/src/main/res/layout/activity_gatcha.xml" value="0.22" />

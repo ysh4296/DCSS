@@ -40,16 +40,6 @@ public class Gatcha extends AppCompatActivity {
         if(extras == null){
             return;
         }
-        /**adapt data
-        ArrayList<item_info> temp_item = new ArrayList<>();
-
-
-       item_RecyclerAdapter = new Adapter();
-        item_RecyclerAdapter.setitemlist(temp_item);
-        item_RecyclerView = (RecyclerView) binding.itemList;
-        item_RecyclerView.setAdapter(item_RecyclerAdapter);
-        item_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
-         **/
     }
     public void Return(View view){
         finish();

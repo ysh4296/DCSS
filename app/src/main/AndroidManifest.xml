@@ -13,6 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Soup">
         <activity
+            android:name=".Equipment_page"
+            android:exported="false" />
+        <activity
+            android:name=".Skill_page"
+            android:exported="false" />
+        <activity
             android:name=".Gatcha"
             android:exported="true" />
         <activity

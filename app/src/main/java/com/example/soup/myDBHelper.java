@@ -59,11 +59,34 @@ public class myDBHelper extends SQLiteOpenHelper {
                 " Negative_Resist_point int," +
                 " Gear int," +
                 " Item_Image_Path int)");
+
+        db.execSQL("create table Skill(Fighting double," +
+                " Armor double," +
+                " sword double," +
+                " axe double," +
+                " arrow double," +
+                " Fighting_weight int," +
+                " Armor_weight int," +
+                " sword_weight int," +
+                " axe_weight int," +
+                " arrow_weight int)");
+        db.execSQL("create table Monster(health_point int," +
+                " AC int," +
+                " EV int," +
+                " XP double," +
+                " Damage int," +
+                " Monster_image_id int)");
+        db.execSQL("create table Current_State(player_health_point int," +
+                " monster_health_point int," +
+                " turns int)");
     }
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion, int newVersion){
         db.execSQL("drop table if exists Charactor_table");
         db.execSQL("drop table if exists Item_table");
         db.execSQL("drop table if exists Bag_Item_table");
+        db.execSQL("drop table if exists Current_State");
+        db.execSQL("drop table if exists Monster");
+        db.execSQL("drop table if exists Skill");
     }
 }

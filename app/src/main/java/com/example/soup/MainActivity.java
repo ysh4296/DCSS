@@ -33,11 +33,12 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private ActivityResultLauncher<Intent> resultLauncher;
 
-    public Player player;
+    public Player player = new Player(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
     public ArrayList<item_data> list;
     public Monster monster;
-    public Current_State current;
-    public Skill skill;
+    public Current_State current = new Current_State(0,0,0);
+    public Skill skill = new Skill(0,0,0,0,0,1,1,1,1,1);
+    ArrayList<Monster> Monster_list = new ArrayList<Monster>();
     //String filepath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/myApp";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,34 +62,93 @@ public class MainActivity extends AppCompatActivity {
                                 add_data_for_bag();
                                 Log.d("item","Updated");
                             }
+                            if(page.equals("Skill")){
+                                skill = (Skill) result.getData().getParcelableExtra("player_skill");
+                                set_page();
+                                updateDB_Skill();
+                                Log.d("Skill","Updated");
+                            }
                         }
                     }
                 }
         );
+        set_player();
+        Log.d("hp0" , String.valueOf(current.player_health_point));
+        SearchDB_Monster();
+        Log.d("hp1" , String.valueOf(current.player_health_point));
         set_Monster();
+        Log.d("hp2" , String.valueOf(current.player_health_point));
         update_Current();
+        Log.d("hp3" , String.valueOf(current.player_health_point));
         set_Current();
+        Log.d("hp4" , String.valueOf(current.player_health_point));
+        set_page();
     }
-    private void set_Monster() {
+
+    private void set_player() {
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
+        Cursor cursor;
+        cursor = sqlDB.rawQuery("select * from Charactor_table;" , null);
+        while(cursor.moveToNext()) {
+            player.level = cursor.getInt(0);
+            player.experience_point = cursor.getDouble(1);
+            player.gold = cursor.getInt(2);
+            player.health_point = cursor.getInt(3);
+            player.mana_point = cursor.getInt(4);
+            player.strength_point = cursor.getInt(5);
+            player.intelligence_point = cursor.getInt(6);
+            player.agility_point = cursor.getInt(7);
+            player.fire_resist_point = cursor.getInt(8);
+            player.ice_resist_point = cursor.getInt(9);
+            player.storm_resist_point = cursor.getInt(10);
+            player.negative_resist_point = cursor.getInt(11);
+            player.head_gear_item_index = cursor.getInt(12);
+            player.body_gear_item_index = cursor.getInt(13);
+            player.left_hand_item_gear_index = cursor.getInt(14);
+            player.right_hand_item_gear_index = cursor.getInt(15);
+            player.feet_item_gear_index = cursor.getInt(16);
+            current.player_health_point = player.health_point;
+            Log.d("hpppp" , String.valueOf(current.player_health_point));
+        }
+        sqlDB.close();
+    }
+
+    private void SearchDB_Monster(){
         myDBHelper myHelper = new myDBHelper(this);
         SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
         Cursor cursor;
         cursor = sqlDB.rawQuery("select * from Monster;" , null);
         while(cursor.moveToNext()) {
-            current.player_health_point = cursor.getInt(0);
-            current.monster_health_point = cursor.getInt(1);
-            current.turns = cursor.getInt(2);
+            int health_point = cursor.getInt(0);
+            int AC = cursor.getInt(1);
+            int EV = cursor.getInt(2);
+            double XP = cursor.getDouble(3);
+            int Damage = cursor.getInt(4);
+            int Monster_image_id = cursor.getInt(5);
+            Monster_list.add(new Monster(health_point,AC,EV,XP,Damage,Monster_image_id));
         }
         sqlDB.close();
+    }
+    private void set_Monster() {
+        Random random = new Random();
+        monster = Monster_list.get(random.nextInt((int)Monster_list.size()));
+        binding.Monster.setImageResource(monster.Monster_image_id);
+        current.monster_health_point = monster.health_point;
     }
     private void update_Current(){
         myDBHelper myHelper = new myDBHelper(this);
         SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
-        sqlDB.rawQuery("update Current_State " +
-                "player_health_point = " + "'" + current.player_health_point +"'" +
-                "monster_health_point = " + "'" + current.monster_health_point +"'" +
-                "turns = " + "'" + current.turns +"'" +
-                ";" , null);
+        Log.d("current hp" , String.valueOf(current.player_health_point));
+        sqlDB.execSQL("update Current_State " +
+                "set player_health_point = " + "" + current.player_health_point +" " +
+                "where player_health_point is not null;");
+        sqlDB.execSQL("update Current_State " +
+                "set monster_health_point = " + "" + current.monster_health_point +" " +
+                "where monster_health_point is not null;");
+        sqlDB.execSQL("update Current_State " +
+                "set turns = " + "" + current.turns +"" +
+                ";where turns is not null;");
         sqlDB.close();
     }
     private void set_Current() {
@@ -97,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor;
         cursor = sqlDB.rawQuery("select * from Current_State;" , null);
         while(cursor.moveToNext()) {
+            Log.d("new" , String.valueOf(cursor.getInt(0)));
             current.player_health_point = cursor.getInt(0);
             current.monster_health_point = cursor.getInt(1);
             current.turns = cursor.getInt(2);
@@ -104,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
         sqlDB.close();
     }
     public void Attack(View view){
+        Log.d("show axe" , String.valueOf(skill.axe));
         damage_each();
         if(current.player_health_point < 0) {
             Toast.makeText(getApplicationContext(),"GameOver",Toast.LENGTH_LONG).show();
@@ -115,9 +177,11 @@ public class MainActivity extends AppCompatActivity {
         else if(current.monster_health_point < 0) {/**exit**/
             player.experience_point += monster.XP;
             Add_Skill(monster.XP);
+            SearchDB_Monster();
             set_Monster();
             update_Current();
             set_Current();
+            set_page();
         }
     }
 
@@ -131,30 +195,48 @@ public class MainActivity extends AppCompatActivity {
         count_all += skill.sword_weight;
         count_all += skill.axe_weight;
         count_all += skill.arrow_weight;
-        skill.Fighting += XP / count_all;
-        skill.Armor += XP / count_all;
-        skill.sword += XP / count_all;
-        skill.axe += XP / count_all;
-        skill.arrow += XP / count_all;
-        insertDB_Skill();
+        skill.Fighting += XP / count_all * skill.Fighting_weight;
+        skill.Armor += XP / count_all * skill.Armor_weight;
+        skill.sword += XP / count_all * skill.sword_weight;
+        skill.axe += XP / count_all * skill.axe_weight;
+        skill.arrow += XP / count_all * skill.arrow_weight;
+        updateDB_Skill();
         sqlDB.close();
         return;
     }
-    private void insertDB_Skill(){
+    private void updateDB_Skill(){
         myDBHelper myHelper = new myDBHelper(this);
         SQLiteDatabase sqlDB = myHelper.getWritableDatabase();
-        sqlDB.rawQuery("update Skill " +
-        "Fighting = " + "'" + skill.Fighting +"'" +
-        "Armor = " + "'" + skill.Armor +"'" +
-        "sword = " + "'" + skill.sword +"'" +
-        "axe = " + "'" + skill.axe +"'" +
-        "arrow = " + "'" + skill.arrow +"'" +
-        "Fighting_weight = " + "'" + skill.Fighting_weight +"'" +
-        "Armor_weight = " + "'" + skill.Armor_weight +"'" +
-        "sword_weight = " + "'" + skill.sword_weight +"'" +
-        "axe_weight = " + "'" + skill.axe_weight +"'" +
-        "arrow_weight = " + "'" + skill.arrow_weight +"'" +
-        ";" , null);
+        sqlDB.execSQL("update Skill " +
+                "set Fighting = " + "" + skill.Fighting +" " +
+                "where Fighting is not null;");
+        sqlDB.execSQL("update Skill " +
+                "set Armor = " + "" + skill.Armor +" " +
+                "where Armor is not null;");
+        sqlDB.execSQL("update Skill " +
+                "set sword = " + "" + skill.sword +"" +
+                ";where sword is not null;");
+        sqlDB.execSQL("update Skill " +
+                "set axe = " + "" + skill.axe +"" +
+                ";where axe is not null;");
+        sqlDB.execSQL("update Skill " +
+                "set arrow = " + "" + skill.arrow +"" +
+                ";where arrow is not null;");
+        sqlDB.execSQL("update Skill " +
+                "set Fighting_weight = " + "" + skill.Fighting_weight +"" +
+                ";where Fighting_weight is not null;");
+        sqlDB.execSQL("update Skill " +
+                "set Armor_weight = " + "" + skill.Armor_weight +"" +
+                ";where Armor_weight is not null;");
+        sqlDB.execSQL("update Skill " +
+                "set sword_weight = " + "" + skill.sword_weight +"" +
+                ";where sword_weight is not null;");
+        sqlDB.execSQL("update Skill " +
+                "set axe_weight = " + "" + skill.axe_weight +"" +
+                ";where axe_weight is not null;");
+        sqlDB.execSQL("update Skill " +
+                "set arrow_weight = " + "" + skill.arrow_weight +"" +
+                ";where arrow_weight is not null;");
         sqlDB.close();
     }
 
@@ -169,11 +251,11 @@ public class MainActivity extends AppCompatActivity {
             skill.sword = cursor.getDouble(2);
             skill.axe = cursor.getDouble(3);
             skill.arrow = cursor.getDouble(4);
-            skill.Fighting_weight = cursor.getInt(6);
-            skill.Armor_weight = cursor.getInt(7);
-            skill.sword_weight = cursor.getInt(8);
-            skill.axe_weight = cursor.getInt(9);
-            skill.arrow_weight = cursor.getInt(10);
+            skill.Fighting_weight = cursor.getInt(5);
+            skill.Armor_weight = cursor.getInt(6);
+            skill.sword_weight = cursor.getInt(7);
+            skill.axe_weight = cursor.getInt(8);
+            skill.arrow_weight = cursor.getInt(9);
         }
         sqlDB.close();
     }
@@ -204,6 +286,8 @@ public class MainActivity extends AppCompatActivity {
     }
     public void set_page(){
         /**set data for main page**/
+        binding.PlayerHP.setText(String.valueOf(current.player_health_point));
+        binding.MonsterHP.setText(String.valueOf(current.monster_health_point));
         return;
     }
     public void add_data_for_bag(){
@@ -471,7 +555,7 @@ public class MainActivity extends AppCompatActivity {
                 "1' , '" +
                 "0' , '" +
                 "100000' , '" +
-                "10' , '" +
+                "500' , '" +
                 "5' , '" +
                 "5' , '" +
                 "5' , '" +
@@ -492,12 +576,40 @@ public class MainActivity extends AppCompatActivity {
                 "0 " +
                 "');");
         sqlDB.execSQL("insert into Monster values('" +
+                "5' , '" +
+                "3' , '" +
+                "0' , '" +
+                "5' , '" +
+                "5' , '" +
+                "" + R.raw.alligator + " " +
+                "');");
+        sqlDB.execSQL("insert into Monster values('" +
+                "20' , '" +
+                "10' , '" +
+                "10' , '" +
+                "50' , '" +
+                "23' , '" +
+                "" + R.raw.soul_eater +"" +
+                "');");
+        sqlDB.execSQL("insert into Monster values('" +
+                "10' , '" +
+                "5' , '" +
+                "0' , '" +
+                "30' , '" +
+                "10' , '" +
+                ""+R.raw.elephant_slug +"" +
+                "');");
+        sqlDB.execSQL("insert into Skill values('" +
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0 " +
+                "1' , '" +
+                "1' , '" +
+                "1' , '" +
+                "1' , '" +
+                "1" +
                 "');");
         sqlDB.close();
         //Toast.makeText(getApplicationContext(),"Initialized",Toast.LENGTH_LONG).show();
@@ -548,6 +660,11 @@ public class MainActivity extends AppCompatActivity {
         Player player = searchDB_player(this);
         intent.putExtra("player_data", (Parcelable) player);
         Log.d("Player", String.valueOf(player.level));
+        resultLauncher.launch(intent);
+    }
+    public void Skill_Page(View view){
+        Intent intent = new Intent(this,Skill_page.class);
+        intent.putExtra("player_skill", (Parcelable) skill);
         resultLauncher.launch(intent);
     }
 

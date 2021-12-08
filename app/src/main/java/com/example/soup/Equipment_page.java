@@ -150,15 +150,17 @@ public class Equipment_page extends AppCompatActivity {
     public void get_item_list_head(View view){
         int max_num_of_item = new Integer(bag.size());
         item_RecyclerAdapter = new bagAdapter();
+        ArrayList<item_data> list_bag = new ArrayList<>();
         ArrayList<item_info> temp_item = new ArrayList<>();
         for (int i = 0 ; i < max_num_of_item ; i++){
             if(bag.get(i).gear != 0) continue;
+            list_bag.add(bag.get(i));
             item_info picked = get_item_info(bag.get(i));
             temp_item.add(new item_info(picked.item_image_id,picked.item_name,picked.item_info));
         }
         item_RecyclerAdapter = new bagAdapter();
         item_RecyclerAdapter.setitemlist(temp_item);
-        item_RecyclerAdapter.setdatalist(bag);
+        item_RecyclerAdapter.setdatalist(list_bag);
         item_RecyclerView = (RecyclerView) binding.itemList;
         item_RecyclerView.setAdapter(item_RecyclerAdapter);
         item_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -166,15 +168,17 @@ public class Equipment_page extends AppCompatActivity {
     public void get_item_list_body(View view){
         int max_num_of_item = new Integer(bag.size());
         item_RecyclerAdapter = new bagAdapter();
+        ArrayList<item_data> list_bag = new ArrayList<>();
         ArrayList<item_info> temp_item = new ArrayList<>();
         for (int i = 0 ; i < max_num_of_item ; i++){
             if(bag.get(i).gear != 1) continue;
+            list_bag.add(bag.get(i));
             item_info picked = get_item_info(bag.get(i));
             temp_item.add(new item_info(picked.item_image_id,picked.item_name,picked.item_info));
         }
         item_RecyclerAdapter = new bagAdapter();
         item_RecyclerAdapter.setitemlist(temp_item);
-        item_RecyclerAdapter.setdatalist(bag);
+        item_RecyclerAdapter.setdatalist(list_bag);
         item_RecyclerView = (RecyclerView) binding.itemList;
         item_RecyclerView.setAdapter(item_RecyclerAdapter);
         item_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -182,15 +186,17 @@ public class Equipment_page extends AppCompatActivity {
     public void get_item_list_right(View view){
         int max_num_of_item = new Integer(bag.size());
         item_RecyclerAdapter = new bagAdapter();
+        ArrayList<item_data> list_bag = new ArrayList<>();
         ArrayList<item_info> temp_item = new ArrayList<>();
         for (int i = 0 ; i < max_num_of_item ; i++){
             if(bag.get(i).gear != 2) continue;
+            list_bag.add(bag.get(i));
             item_info picked = get_item_info(bag.get(i));
             temp_item.add(new item_info(picked.item_image_id,picked.item_name,picked.item_info));
         }
         item_RecyclerAdapter = new bagAdapter();
         item_RecyclerAdapter.setitemlist(temp_item);
-        item_RecyclerAdapter.setdatalist(bag);
+        item_RecyclerAdapter.setdatalist(list_bag);
         item_RecyclerView = (RecyclerView) binding.itemList;
         item_RecyclerView.setAdapter(item_RecyclerAdapter);
         item_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -198,15 +204,17 @@ public class Equipment_page extends AppCompatActivity {
     public void get_item_list_left(View view){
         int max_num_of_item = new Integer(bag.size());
         item_RecyclerAdapter = new bagAdapter();
+        ArrayList<item_data> list_bag = new ArrayList<>();
         ArrayList<item_info> temp_item = new ArrayList<>();
         for (int i = 0 ; i < max_num_of_item ; i++){
             if(bag.get(i).gear != 3) continue;
+            list_bag.add(bag.get(i));
             item_info picked = get_item_info(bag.get(i));
             temp_item.add(new item_info(picked.item_image_id,picked.item_name,picked.item_info));
         }
         item_RecyclerAdapter = new bagAdapter();
         item_RecyclerAdapter.setitemlist(temp_item);
-        item_RecyclerAdapter.setdatalist(bag);
+        item_RecyclerAdapter.setdatalist(list_bag);
         item_RecyclerView = (RecyclerView) binding.itemList;
         item_RecyclerView.setAdapter(item_RecyclerAdapter);
         item_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -214,15 +222,17 @@ public class Equipment_page extends AppCompatActivity {
     public void get_item_list_foot(View view){
         int max_num_of_item = new Integer(bag.size());
         item_RecyclerAdapter = new bagAdapter();
+        ArrayList<item_data> list_bag = new ArrayList<>();
         ArrayList<item_info> temp_item = new ArrayList<>();
         for (int i = 0 ; i < max_num_of_item ; i++){
             if(bag.get(i).gear != 4) continue;
+            list_bag.add(bag.get(i));
             item_info picked = get_item_info(bag.get(i));
             temp_item.add(new item_info(picked.item_image_id,picked.item_name,picked.item_info));
         }
         item_RecyclerAdapter = new bagAdapter();
         item_RecyclerAdapter.setitemlist(temp_item);
-        item_RecyclerAdapter.setdatalist(bag);
+        item_RecyclerAdapter.setdatalist(list_bag);
         item_RecyclerView = (RecyclerView) binding.itemList;
         item_RecyclerView.setAdapter(item_RecyclerAdapter);
         item_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -230,15 +240,17 @@ public class Equipment_page extends AppCompatActivity {
     public void get_item_list_use(View view){
         int max_num_of_item = new Integer(bag.size());
         item_RecyclerAdapter = new bagAdapter();
+        ArrayList<item_data> list_bag = new ArrayList<>();
         ArrayList<item_info> temp_item = new ArrayList<>();
         for (int i = 0 ; i < max_num_of_item ; i++){
             if(bag.get(i).gear != 5) continue;
+            list_bag.add(bag.get(i));
             item_info picked = get_item_info(bag.get(i));
             temp_item.add(new item_info(picked.item_image_id,picked.item_name,picked.item_info));
         }
         item_RecyclerAdapter = new bagAdapter();
         item_RecyclerAdapter.setitemlist(temp_item);
-        item_RecyclerAdapter.setdatalist(bag);
+        item_RecyclerAdapter.setdatalist(list_bag);
         item_RecyclerView = (RecyclerView) binding.itemList;
         item_RecyclerView.setAdapter(item_RecyclerAdapter);
         item_RecyclerView.setLayoutManager(new LinearLayoutManager(this));

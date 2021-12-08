@@ -3,6 +3,7 @@ package com.example.soup;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -18,6 +19,7 @@ public class Status extends AppCompatActivity {
     private @NonNull
     ActivityStatusBinding binding;
     public Player player;
+    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +28,7 @@ public class Status extends AppCompatActivity {
         setContentView(view);
         Bundle extras = getIntent().getExtras();
         player = (Player) getIntent().getParcelableExtra("player_data");
+        binding.Player.setImageResource(R.raw.demonspawn_black_m);
         binding.level.setText("LEVEL : " + String.valueOf(player.level));
         binding.hp.setText("HP : " + String.valueOf(player.health_point));
         binding.mp.setText("MP : " + String.valueOf(player.mana_point));

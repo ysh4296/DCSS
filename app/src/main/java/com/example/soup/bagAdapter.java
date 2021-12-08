@@ -78,7 +78,6 @@ public class bagAdapter extends RecyclerView.Adapter<bagAdapter.ViewHolder> {
                     } else if(clicked_item.gear == 4) {// foot
                         foot = clicked_item;
                     }
-
                     Toast.makeText(itemView.getContext(),"item_changed to " + clicked_item.item_name,Toast.LENGTH_LONG).show();
                 }
             });

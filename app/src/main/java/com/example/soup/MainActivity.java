@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     public Skill skill = new Skill(0,0,0,0,0,1,1,1,1,1);
     ArrayList<Monster> Monster_list = new ArrayList<Monster>();
     //String filepath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/myApp";
+    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+        binding.Charactor.setImageResource(R.raw.demonspawn_black_m);
         set_player();
         Log.d("hp0" , String.valueOf(current.player_health_point));
         SearchDB_Monster();

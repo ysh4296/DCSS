@@ -68,6 +68,15 @@ public class MainActivity extends AppCompatActivity {
                                 updateDB_Skill();
                                 Log.d("Skill","Updated");
                             }
+                            if(page.equals("Equipment")){
+                                int prev = player.health_point;
+                                player = (Player) result.getData().getParcelableExtra("player_data");
+                                current.player_health_point += player.health_point - prev;
+                                set_page();
+                                update_Current();
+                                set_Current();
+                                Log.d("Equipment","Updated");
+                            }
                         }
                     }
                 }
@@ -262,13 +271,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void damage_each(){
         Random random = new Random();
-        for(int i = 0 ; i < 3 ; i++)
-        current.player_health_point -= random.nextInt(monster.Damage);
+        int damaged = 0;
+        for(int i = 0 ; i < 3 ; i++) damaged += random.nextInt(monster.Damage);
+        current.player_health_point -= damaged;
         int res = 0;
         for(int i = 0 ; i < 3 ; i++) {
             res += random.nextInt(player.strength_point * (Exp_to_Level(skill.arrow + skill.sword + skill.axe)));
         }
-        current.monster_health_point -= res * (100 - monster.AC/ 100);
+        current.monster_health_point -= res * ((double)(100 - monster.AC)/ (double)100);
+        Toast.makeText(getApplicationContext(),"Attacked : " + String.valueOf((int)(res * ((double)(100 - monster.AC)/ (double)100))) + "\n Damaged : " + damaged,Toast.LENGTH_LONG).show();
+
         set_page();
     }
     private int Exp_to_Level(double v) {
@@ -392,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
                 " monster_health_point int," +
                 " turns int)");
         Log.d("test","insert into Item_table values('" +
-                        "3' , '" +
+                        "elven_short_sword' , '" +
                         "1' , '" +
                         "3' , '" +
                         "0' , '" +
@@ -404,11 +416,11 @@ public class MainActivity extends AppCompatActivity {
                         "0' , '" +
                         "0' , '" +
                         "0' , '" +
-                        "0' , '" +
+                        "2' , '" +
                         R.raw.elven_short_sword +"" +
                         "');");
         sqlDB.execSQL("insert into Item_table values('" +
-                "3' , '" +
+                "elven_short_sword' , '" +
                 "2' , '" +
                 "3' , '" +
                 "0' , '" +
@@ -420,13 +432,13 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "2' , '" +
                 R.raw.elven_short_sword +"" +
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
+                "orcish_dagger' , '" +
                 "3' , '" +
                 "3' , '" +
-                "3' , '" +
                 "0' , '" +
                 "0' , '" +
                 "3' , '" +
@@ -436,11 +448,11 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "2' , '" +
                 R.raw.orcish_dagger +"" +
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
-                "3' , '" +
+                "orcish_dagger' , '" +
                 "4' , '" +
                 "3' , '" +
                 "0' , '" +
@@ -452,11 +464,11 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "2' , '" +
                 R.raw.orcish_dagger +"" +
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
-                "3' , '" +
+                "scimitar1' , '" +
                 "5' , '" +
                 "2' , '" +
                 "5' , '" +
@@ -468,11 +480,11 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "2' , '" +
                 R.raw.scimitar1 +"" +
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
-                "3' , '" +
+                "scimitar2' , '" +
                 "6' , '" +
                 "2' , '" +
                 "8' , '" +
@@ -484,11 +496,11 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "2' , '" +
                 R.raw.scimitar1 +"" +
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
-                "3' , '" +
+                "sabre2' , '" +
                 "7' , '" +
                 "2' , '" +
                 "8' , '" +
@@ -500,11 +512,11 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "2' , '" +
                 R.raw.sabre2 +"" +
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
-                "3' , '" +
+                "bardiche1' , '" +
                 "8' , '" +
                 "1' , '" +
                 "10' , '" +
@@ -516,11 +528,11 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "2' , '" +
                 R.raw.bardiche1 +"" +
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
-                "3' , '" +
+                "bardiche3' , '" +
                 "9' , '" +
                 "1' , '" +
                 "10' , '" +
@@ -532,11 +544,11 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "2' , '" +
                 R.raw.bardiche1 +"" +
                 "');");
         sqlDB.execSQL("insert into Item_table values('" +
-                "3' , '" +
+                "double_sword' , '" +
                 "10' , '" +
                 "0' , '" +
                 "20' , '" +
@@ -548,8 +560,72 @@ public class MainActivity extends AppCompatActivity {
                 "0' , '" +
                 "0' , '" +
                 "0' , '" +
-                "0' , '" +
+                "2' , '" +
                 R.raw.double_sword +"" +
+                "');");
+        sqlDB.execSQL("insert into Item_table values('" +
+                "animal_skin1' , '" +
+                "5' , '" +
+                "2' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "1' , '" +
+                R.raw.animal_skin1+"" +
+                "');");
+        sqlDB.execSQL("insert into Item_table values('" +
+                "cloak4' , '" +
+                "3' , '" +
+                "3' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "1' , '" +
+                "1' , '" +
+                "0' , '" +
+                "1' , '" +
+                R.raw.cloak4 +"" +
+                "');");
+        sqlDB.execSQL("insert into Item_table values('" +
+                "orcish_dagger' , '" +
+                "4' , '" +
+                "3' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "1' , '" +
+                "0' , '" +
+                "0' , '" +
+                "1' , '" +
+                "1' , '" +
+                R.raw.green_dragon_scale_mail +"" +
+                "');");
+        sqlDB.execSQL("insert into Item_table values('" +
+                "ring_mail2' , '" +
+                "5' , '" +
+                "2' , '" +
+                "5' , '" +
+                "3' , '" +
+                "4' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "0' , '" +
+                "1' , '" +
+                "1' , '" +
+                R.raw.ring_mail2 +"" +
                 "');");
         sqlDB.execSQL("insert into Charactor_table values('" +
                 "1' , '" +
@@ -592,7 +668,7 @@ public class MainActivity extends AppCompatActivity {
                 "" + R.raw.soul_eater +"" +
                 "');");
         sqlDB.execSQL("insert into Monster values('" +
-                "10' , '" +
+                "500' , '" +
                 "5' , '" +
                 "0' , '" +
                 "30' , '" +
@@ -666,6 +742,45 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this,Skill_page.class);
         intent.putExtra("player_skill", (Parcelable) skill);
         resultLauncher.launch(intent);
+    }
+    public void Equipment_Page(View view){
+        Intent intent = new Intent(this,Equipment_page.class);
+        ArrayList<item_data> list = searchDB_bag(this);
+        intent.putExtra("item_bag",list);
+        intent.putExtra("player_data", (Parcelable) player);
+        resultLauncher.launch(intent);
+    }
+
+    private ArrayList<item_data> searchDB_bag(MainActivity mainActivity) {
+        myDBHelper myHelper = new myDBHelper(this);
+        SQLiteDatabase sqlDB = myHelper.getReadableDatabase();
+        ArrayList<item_data> list = new ArrayList<>();
+        Cursor cursor;
+
+        cursor = sqlDB.rawQuery("select * from Bag_Item_table;" , null);
+        while(cursor.moveToNext()) {
+            String item_name = cursor.getString(0);
+            int item_index = cursor.getInt(1);
+            int item_Rarity = cursor.getInt(2);
+            int health_point = cursor.getInt(3);
+            int mana_point = cursor.getInt(4);
+            int strength_point = cursor.getInt(5);
+            int intelligence_point = cursor.getInt(6);
+            int agility_point = cursor.getInt(7);
+            int fire_resist_point = cursor.getInt(8);
+            int ice_resist_point = cursor.getInt(9);
+            int storm_resist_point = cursor.getInt(10);
+            int negative_resist_point = cursor.getInt(11);
+            int gear = cursor.getInt(12);
+            int item_path = cursor.getInt(13);
+            list.add(new item_data(item_name,item_index,item_Rarity,health_point,mana_point,strength_point,
+                    intelligence_point,agility_point,fire_resist_point,ice_resist_point,storm_resist_point,negative_resist_point,
+                    gear,item_path));
+        }
+        cursor.close();
+        sqlDB.close();
+        Toast.makeText(getApplicationContext(),"Searched",Toast.LENGTH_LONG).show();
+        return list;
     }
 
     private Player searchDB_player(MainActivity view) {
